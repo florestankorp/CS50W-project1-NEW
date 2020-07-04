@@ -95,3 +95,10 @@ def random(request):
     max = len(util.list_entries())
     e = util.list_entries()[randrange(max)]
     return HttpResponseRedirect(reverse("encyclopedia:entry", kwargs={"entry": e}))
+
+
+def search(request):
+    query = request.GET.get("q", "")
+    e = util.get_entry(query)
+
+    return render(request, "encyclopedia/entry.html", {"entry": e, "name": query})
