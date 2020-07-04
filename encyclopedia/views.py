@@ -1,3 +1,5 @@
+from random import randrange
+
 from django import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -87,3 +89,9 @@ def edit(request, name):
 
     form = EditEntryForm({"title": name, "content": e})
     return render(request, "encyclopedia/edit.html", {"form": form})
+
+
+def random(request):
+    max = len(util.list_entries())
+    e = util.list_entries()[randrange(max)]
+    return HttpResponseRedirect(reverse("encyclopedia:entry", kwargs={"entry": e}))
