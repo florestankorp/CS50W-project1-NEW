@@ -21,8 +21,13 @@ entry exists, the function returns None.
 """
 
 
-class EntryForm(forms.Form):
+class NewEntryForm(forms.Form):
     title = forms.CharField(label="New Entry")
+    content = forms.CharField(widget=forms.Textarea)
+
+
+class EditEntryForm(forms.Form):
+    title = forms.CharField(label="Edit Entry")
     content = forms.CharField(widget=forms.Textarea)
 
 
@@ -42,7 +47,7 @@ def entry(request, entry):
 
 def new(request):
     if request.method == "POST":
-        form = EntryForm(request.POST)
+        form = NewEntryForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data["title"]
             content = form.cleaned_data["content"]
@@ -60,4 +65,25 @@ def new(request):
             # validate validate validate
             return HttpResponseRedirect(title)
 
-    return render(request, "encyclopedia/new.html", {"form": EntryForm()})
+    return render(request, "encyclopedia/new.html", {"form": NewEntryForm()})
+
+
+def edit(request, name):
+    e = util.get_entry(name)
+
+    if request.method == "POST":
+        form = EditEntryForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
+
+            if e is not None:
+                util.save_entry(title, content)
+
+                # validate validate validate title
+                return HttpResponseRedirect(
+                    reverse("encyclopedia:entry", kwargs={"entry": title})
+                )
+
+    form = EditEntryForm({"title": name, "content": e})
+    return render(request, "encyclopedia/edit.html", {"form": form})

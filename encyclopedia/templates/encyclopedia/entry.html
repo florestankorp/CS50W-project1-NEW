@@ -8,5 +8,6 @@
 <h1>{{ name }}</h1>
 
 {{ entry }}
+<a href="{% url 'encyclopedia:edit' name %}">Edit Entry</a>
 
 {% endblock %}
