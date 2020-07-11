@@ -1,12 +1,15 @@
+import re
 from random import randrange
 
 from django import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from markdown2 import Markdown
 
 from . import util
 
+markdown = Markdown()
 
 """
 list_entries():
@@ -38,13 +41,17 @@ def index(request):
 
 
 def entry(request, entry):
-    e = util.get_entry(entry)
-    if e is None:
+    fetched_entry = util.get_entry(entry)
+    if fetched_entry is None:
         return render(
             request, "encyclopedia/error.html", {"error": f"{entry} not found"}
         )
 
-    return render(request, "encyclopedia/entry.html", {"entry": e, "name": entry})
+    return render(
+        request,
+        "encyclopedia/entry.html",
+        {"entry": markdown.convert(fetched_entry), "name": entry},
+    )
 
 
 def new(request):
@@ -98,7 +105,35 @@ def random(request):
 
 
 def search(request):
+    found_entries = []
+    entry_list = util.list_entries()
+
     query = request.GET.get("q", "")
     e = util.get_entry(query)
+
+    if e is None:
+        for entry in entry_list:
+            # test (partial) match against regex
+            regex = re.search(query, entry)
+            print(query)
+            print(entry)
+            print(regex)
+
+            if regex is None:
+                # display error when no entries (partially) matching were found
+                pass
+            else:
+                # append result to list
+                index = entry_list.index(entry)
+                found_entry = entry_list[index]
+                found_entries.append(found_entry)
+
+        if len(found_entries) is 0:
+            return render(
+                request, "encyclopedia/error.html", {"error": f"{query} not found"}
+            )
+
+        # when for loop is done send list to template
+        return render(request, "encyclopedia/index.html", {"entries": found_entries})
 
     return render(request, "encyclopedia/entry.html", {"entry": e, "name": query})
