@@ -115,9 +115,6 @@ def search(request):
         for entry in entry_list:
             # test (partial) match against regex
             regex = re.search(query, entry)
-            print(query)
-            print(entry)
-            print(regex)
 
             if regex is None:
                 # display error when no entries (partially) matching were found
