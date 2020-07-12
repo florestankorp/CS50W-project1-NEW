@@ -12,11 +12,6 @@ h1 {
     padding-top: 20px;
 }
 
-textarea {
-    height: 90vh;
-    width: 80%;
-}
-
 .main {
     padding: 10px;
 }
@@ -35,4 +30,26 @@ textarea {
 
 .sidebar h2 {
     margin-top: 5px;
+}
+
+form {
+    display: inline-grid;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.title {
+    margin-bottom: 11px;
+}
+
+.content {
+    height: 100%;
+    width: 100%;
+}
+
+input[type="submit"] {
+    margin-top: 11px;
 }

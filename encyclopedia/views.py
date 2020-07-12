@@ -109,9 +109,9 @@ def search(request):
     entry_list = util.list_entries()
 
     query = request.GET.get("q", "")
-    e = util.get_entry(query)
+    fetched_entry = util.get_entry(query)
 
-    if e is None:
+    if fetched_entry is None:
         for entry in entry_list:
             # test (partial) match against regex
             regex = re.search(query, entry)
@@ -125,7 +125,7 @@ def search(request):
                 found_entry = entry_list[index]
                 found_entries.append(found_entry)
 
-        if len(found_entries) is 0:
+        if len(found_entries) == 0:
             return render(
                 request, "encyclopedia/error.html", {"error": f"{query} not found"}
             )
@@ -133,4 +133,8 @@ def search(request):
         # when for loop is done send list to template
         return render(request, "encyclopedia/index.html", {"entries": found_entries})
 
-    return render(request, "encyclopedia/entry.html", {"entry": e, "name": query})
+    return render(
+        request,
+        "encyclopedia/entry.html",
+        {"entry": markdown.convert(fetched_entry), "name": query},
+    )
